@@ -1,0 +1,24 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Checkpoint Remastered//VGA 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:vga2026-en-vivo@checkpointvg.github.io
+DTSTAMP:20261118T000000Z
+DTSTART:20261211T000000Z
+DTEND:20261211T030000Z
+SUMMARY:The Game Awards 2026 en vivo con Checkpoint
+DESCRIPTION:Seguí The Game Awards en vivo con Checkpoint Remastered y mir
+ á en el ranking quién la vio venir.\n\nTwitch: https://www.twitch.tv/che
+ ckpointvg\nYouTube: https://www.youtube.com/@CheckpointVG\n\nTu pronóstic
+ o: https://checkpointvg.github.io/vga/
+LOCATION:https://www.twitch.tv/checkpointvg
+URL:https://www.twitch.tv/checkpointvg
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:The Game Awards en vivo con Checkpoint
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -46,6 +46,7 @@
             <div class="err" id="aliasErr" role="alert"></div>
             <button class="btn" type="submit" id="startBtn">Empezar ▸</button>
         </form>
+        <div class="live-slot reveal" style="--d:5" data-variant="intro"></div>
     </section>
 
     <!-- CATEGORÍA -->
@@ -104,6 +105,7 @@
                 </div>
             </div>
         </div>
+        <div class="live-slot reveal" style="--d:6" data-variant="done"></div>
     </section>
 
 </main>
@@ -116,6 +118,7 @@
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4zm-1.2 17.9h1.9L7 4.2H5l12 16z"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M12 13.5v4M10 15.5h4"/></symbol>
     <symbol id="i-twitch" viewBox="0 0 24 24"><path d="M2.1 0 .5 4.2v17h5.7V24h3.2l3-2.8h4.6l6.1-6.1V0H2.1zm19 14.1-3.6 3.6h-5.7l-3 3v-3H4.2V2.1h16.9v12zM17.6 6.6v6.2h-2.1V6.6h2.1zm-5.7 0v6.2H9.8V6.6h2.1z"/></symbol>
 </svg>
 
@@ -583,6 +586,60 @@ async function copyLink(withImage) {
     catch (e) { prompt('Copiá el link:', SITE_URL); }
 }
 $('shareCopy').onclick = copyLink;
+
+/* ---------- en vivo + calendario ---------- */
+const LIVE = {
+    // Jueves 10/12/2026 21:00 hora argentina (UTC-3) = 11/12 00:00 UTC
+    start: '20261211T000000Z', end: '20261211T030000Z',
+    title: 'The Game Awards 2026 en vivo con Checkpoint',
+    twitch: 'https://www.twitch.tv/checkpointvg',
+    youtube: 'https://www.youtube.com/@CheckpointVG',
+};
+const LIVE_END = Date.UTC(2026, 11, 11, 3);
+function googleCalUrl() {
+    const details = `Seguí The Game Awards en vivo con Checkpoint Remastered y mirá en el ranking quién la vio venir.\n\nTwitch: ${LIVE.twitch}\nYouTube: ${LIVE.youtube}\n\nTu pronóstico: ${SITE_URL}`;
+    return 'https://calendar.google.com/calendar/render?' + new URLSearchParams({
+        action: 'TEMPLATE', text: LIVE.title, dates: `${LIVE.start}/${LIVE.end}`,
+        details, location: LIVE.twitch, ctz: 'America/Argentina/Buenos_Aires',
+    });
+}
+function renderLive() {
+    if (Date.now() > LIVE_END) { document.querySelectorAll('.live-slot').forEach(e => e.remove()); return; }
+    document.querySelectorAll('.live-slot').forEach(slot => {
+        const intro = slot.dataset.variant === 'intro';
+        slot.innerHTML = `
+        <div class="live">
+            <div class="live-head">
+                <span class="live-dot" aria-hidden="true"></span>
+                <div>
+                    <b>${intro ? 'Completá la votación y seguinos en vivo' : 'Seguinos en vivo el día de The Game Awards'}</b>
+                    <small>Jueves 10 de diciembre · 21 h (hora argentina)</small>
+                </div>
+            </div>
+            <div class="live-actions">
+                <div class="cal">
+                    <button class="btn cal-btn" type="button" aria-haspopup="true" aria-expanded="false"><svg><use href="#i-calendar"/></svg>Agregar al calendario</button>
+                    <div class="cal-menu" hidden>
+                        <a href="${googleCalUrl()}" target="_blank" rel="noopener">Google Calendar</a>
+                        <a href="assets/vga2026-en-vivo.ics" download="the-game-awards-checkpoint.ics">Apple / Outlook / otro (.ics)</a>
+                    </div>
+                </div>
+                <a class="live-link tw" href="${LIVE.twitch}" target="_blank" rel="noopener" aria-label="Twitch"><svg><use href="#i-twitch"/></svg><span>Twitch</span></a>
+                <a class="live-link yt" href="${LIVE.youtube}" target="_blank" rel="noopener" aria-label="YouTube"><svg><use href="#i-youtube"/></svg><span>YouTube</span></a>
+            </div>
+        </div>`;
+    });
+}
+document.addEventListener('click', e => {
+    const btn = e.target.closest('.cal-btn');
+    document.querySelectorAll('.cal-menu').forEach(m => {
+        const mine = btn && m.previousElementSibling === btn;
+        m.hidden = mine ? !m.hidden : true;
+        m.previousElementSibling.setAttribute('aria-expanded', String(!m.hidden));
+    });
+    if (e.target.closest('.cal-menu a')) setTimeout(() => document.querySelectorAll('.cal-menu').forEach(m => m.hidden = true), 0);
+});
+renderLive();
 $('againBtn').onclick = () => { state.sent = false; save(); renderReview(); };
 
 /* ---------- arranque ---------- */
