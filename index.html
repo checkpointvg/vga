@@ -97,6 +97,18 @@
     </nav>
 </footer>
 
+<!-- Aviso "Guardado" al elegir -->
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="ok">✓</span><small>Guardado</small><span class="t" id="toastText"></span></div>
+
+<!-- Cortina entre categorías -->
+<div class="wipe" id="wipe" aria-hidden="true">
+    <div class="wipe-panel">
+        <div class="bands l"><i></i><i></i><i></i></div>
+        <div class="wipe-txt"><small id="wipeKicker"></small><b id="wipeTitle"></b></div>
+        <div class="bands r"><i></i><i></i><i></i></div>
+    </div>
+</div>
+
 <div class="hud">
     <img src="assets/logo-mini.png" alt="" aria-hidden="true">
     <span class="count" id="hudCount" aria-hidden="true"></span>
@@ -155,6 +167,40 @@ function splitName(s) {
     return i < 0 ? { name: s, game: '' } : { name: s.slice(0, i), game: s.slice(i + 3) };
 }
 
+/* ---------- transiciones ---------- */
+const REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+let busy = false;
+/* Cortina con las franjas del logo: tapa la pantalla, cambia el contenido por debajo y se va. */
+function wipeTo(kicker, title, dir, swap) {
+    if (REDUCE) { swap(); return; }
+    busy = true;
+    const w = $('wipe');
+    $('wipeKicker').innerHTML = kicker;
+    $('wipeTitle').textContent = title;
+    w.className = 'wipe ' + (dir < 0 ? 'back' : 'fwd');
+    void w.offsetWidth;
+    w.classList.add('in');
+    setTimeout(() => { swap(); w.classList.add('out'); }, 460);
+    setTimeout(() => { w.className = 'wipe'; busy = false; }, 900);
+}
+function goCat(i, dir = 1) {
+    const c = cats[i];
+    wipeTo(`Categoría ${pad(i + 1)} / ${cats.length}`, c === GOTY ? 'Game of the Year' : c.nombre, dir, () => renderCat(i));
+}
+function goReview(dir = 1) {
+    wipeTo('Revisá tus elecciones', 'Tu boleta', dir, renderReview);
+}
+
+let toastTimer = null;
+function toast(text) {
+    $('toastText').textContent = text;
+    $('toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2200);
+}
+
+const allPicked = () => cats.every(c => state.picks[c.entry]);
+
 /* ---------- categoría ---------- */
 let advanceTimer = null;
 function renderCat(i) {
@@ -179,11 +225,16 @@ function renderCat(i) {
         </button>`;
     }).join('');
     $('prevBtn').disabled = false;
-    $('nextBtn').textContent = i === cats.length - 1 ? 'Revisar ▸' : (picked ? 'Siguiente ▸' : 'Saltear ▸');
+    $('nextBtn').textContent = nextLabel(i, picked);
     show('cat');
+}
+function nextLabel(i, picked) {
+    if (state.editing || (picked && allPicked())) return 'Volver a la boleta ▸';
+    return i === cats.length - 1 ? 'Revisar ▸' : (picked ? 'Siguiente ▸' : 'Saltear ▸');
 }
 
 function pick(k) {
+    if (busy) return;
     const i = state.step, c = cats[i];
     const nom = c.nominados[k];
     if (nom === undefined) return;
@@ -193,20 +244,30 @@ function pick(k) {
     box.querySelectorAll('.card').forEach(b => {
         const on = +b.dataset.k === k;
         b.classList.toggle('picked', on);
+        b.classList.remove('stamp');
         b.setAttribute('aria-pressed', on);
+        if (on) { void b.offsetWidth; b.classList.add('stamp'); }
     });
-    $('nextBtn').textContent = i === cats.length - 1 ? 'Revisar ▸' : 'Siguiente ▸';
+    $('nextBtn').textContent = nextLabel(i, nom);
+    toast(splitName(nom).name);
     updateHud();
     clearTimeout(advanceTimer);
-    advanceTimer = setTimeout(next, 650);
+    advanceTimer = setTimeout(next, 750); // tiempo para ver la confirmación antes de la cortina
 }
 
+/* Si se está editando desde la boleta, o ya está todo elegido, vuelve directo a la boleta. */
 function next() {
-    if (state.step < cats.length - 1) renderCat(state.step + 1);
-    else renderReview();
+    if (busy) return;
+    clearTimeout(advanceTimer);
+    const picked = state.picks[cats[state.step].entry];
+    if (state.editing || (picked && allPicked()) || state.step >= cats.length - 1) goReview(1);
+    else goCat(state.step + 1, 1);
 }
 function prev() {
-    if (state.step > 0) renderCat(state.step - 1);
+    if (busy) return;
+    clearTimeout(advanceTimer);
+    if (state.editing) goReview(-1);
+    else if (state.step > 0) goCat(state.step - 1, -1);
     else { state.step = -1; save(); show('intro'); }
 }
 
@@ -231,14 +292,15 @@ $('aliasForm').addEventListener('submit', e => {
     const v = $('alias').value.trim().replace(/\s+/g, ' ');
     if (v.length < 2) { $('aliasErr').textContent = 'Poné un alias de al menos 2 letras.'; $('alias').focus(); return; }
     $('aliasErr').textContent = '';
-    state.alias = v; save();
-    renderCat(state.step >= 0 && state.step < cats.length ? state.step : 0);
+    state.alias = v; state.editing = false; save();
+    if (state.step >= cats.length) goReview(1);
+    else goCat(state.step >= 0 ? state.step : 0, 1);
 });
 
 /* ---------- resumen ---------- */
 function renderReview() {
     clearTimeout(advanceTimer);
-    state.step = cats.length; save();
+    state.step = cats.length; state.editing = false; save();
     $('voterName').textContent = state.alias;
     $('summary').innerHTML = cats.map((c, i) => {
         const p = state.picks[c.entry];
@@ -254,12 +316,21 @@ function renderReview() {
     $('sendBtn').disabled = false;
     $('sendBtn').textContent = 'Enviar pronóstico ▸';
     show('review');
+    if (lastEdited >= 0) { // volver a la fila recién editada y resaltarla
+        const row = document.querySelector(`.row[data-i="${lastEdited}"]`);
+        lastEdited = -1;
+        if (row) { row.scrollIntoView({ block: 'center' }); row.classList.add('edited'); }
+    }
 }
+let lastEdited = -1;
 $('summary').addEventListener('click', e => {
     const r = e.target.closest('.row');
-    if (r) renderCat(+r.dataset.i);
+    if (!r || busy) return;
+    state.editing = true; save();          // al elegir, vuelve directo a la boleta
+    lastEdited = +r.dataset.i;
+    goCat(+r.dataset.i, -1);
 });
-$('backBtn').onclick = () => renderCat(cats.length - 1);
+$('backBtn').onclick = () => { if (!busy) { state.editing = false; goCat(cats.length - 1, -1); } };
 
 /* ---------- envío a Google Forms ---------- */
 async function send() {
