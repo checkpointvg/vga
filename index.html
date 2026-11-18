@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pronósticos VGA 2026 · Checkpoint Remastered</title>
+<meta name="description" content="¿Quién se lleva cada premio de The Game Awards 2026? Armá tu pronóstico y competí en el ranking de Checkpoint.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Checkpoint Remastered">
+<meta property="og:title" content="Pronósticos VGA 2026 · Checkpoint Remastered">
+<meta property="og:description" content="¿Quién se lleva cada premio de The Game Awards 2026? Armá tu pronóstico y competí en el ranking de Checkpoint.">
+<meta property="og:url" content="https://checkpointvg.github.io/vga/">
+<meta property="og:image" content="https://checkpointvg.github.io/vga/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#222a3e">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,6 +89,21 @@
             <a class="btn" href="ranking.html" style="text-decoration:none">Ver ranking en vivo ▸</a>
             <button class="btn ghost" id="againBtn" type="button">Cambiar mi pronóstico</button>
         </div>
+        <div class="share reveal" style="--d:5" id="shareBox">
+            <small>Desafiá a tus amigos</small>
+            <div class="share-body">
+                <button class="share-preview" id="sharePreview" type="button" aria-label="Descargar imagen de mi pronóstico"><img id="shareImg" alt="Imagen de tu pronóstico"></button>
+                <div class="share-actions">
+                    <button class="btn" id="shareBtn" type="button"><svg><use href="#i-share"/></svg>Compartir</button>
+                    <div class="share-row">
+                        <a class="share-ico" id="shareWa" target="_blank" rel="noopener" aria-label="Compartir por WhatsApp"><svg><use href="#i-whatsapp"/></svg><span>WhatsApp</span></a>
+                        <button class="share-ico" id="shareIg" type="button" aria-label="Imagen para historia de Instagram"><svg><use href="#i-instagram"/></svg><span>Historia</span></button>
+                        <a class="share-ico" id="shareX" target="_blank" rel="noopener" aria-label="Compartir en X"><svg><use href="#i-x"/></svg><span>X</span></a>
+                        <button class="share-ico" id="shareCopy" type="button" aria-label="Copiar link"><svg><use href="#i-link"/></svg><span>Link</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
 </main>
@@ -85,6 +112,10 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="i-youtube" viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></symbol>
     <symbol id="i-instagram" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.2.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4A9.8 9.8 0 0 1 2.2 12C2.2 6.6 6.6 2.2 12 2.2c2.6 0 5.1 1 6.9 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.4 9.8-9.8 9.8zM20.5 3.5A11.8 11.8 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.2 1.6 6L0 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.3z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4zm-1.2 17.9h1.9L7 4.2H5l12 16z"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
     <symbol id="i-twitch" viewBox="0 0 24 24"><path d="M2.1 0 .5 4.2v17h5.7V24h3.2l3-2.8h4.6l6.1-6.1V0H2.1zm19 14.1-3.6 3.6h-5.7l-3 3v-3H4.2V2.1h16.9v12zM17.6 6.6v6.2h-2.1V6.6h2.1zm-5.7 0v6.2H9.8V6.6h2.1z"/></symbol>
 </svg>
 
@@ -369,7 +400,189 @@ function renderDone() {
     $('gotyBox').style.display = goty ? '' : 'none';
     $('gotyPick').textContent = goty || '';
     show('done');
+    setupShare();
 }
+
+/* ---------- compartir ---------- */
+const SITE_URL = 'https://checkpointvg.github.io/vga/';
+/* categorías que aparecen en la imagen, además del GOTY */
+const SHARE_CATS = ['Best Game Direction', 'Best Narrative', 'Best Art Direction'];
+let shareFile = null;
+
+function shareText() {
+    const goty = GOTY && state.picks[GOTY.entry];
+    return (goty ? `Mi Game of the Year 2026 es ${goty} 🏆 ` : 'Ya hice mi pronóstico de los VGA 2026 🏆 ')
+        + '¿Vos quién creés que gana? Armá tu pronóstico y competí en el ranking de Checkpoint:';
+}
+
+function loadImg(src) {
+    return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+}
+const coverSrc = name => `assets/covers/${slug(splitName(name).game || name)}.jpg`;
+
+/* Dibuja la imagen dentro de la caja (x,y,w,h): portadas llenan, logos anchos se ven completos. */
+function drawCover(ctx, img, name, x, y, w, h, r) {
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip();
+    ctx.fillStyle = '#1c2334'; ctx.fillRect(x, y, w, h);
+    if (img) {
+        const ir = img.width / img.height, br = w / h;
+        if (ir > 1.15) { // logo apaisado: contener
+            const dw = w * .88, dh = dw / ir;
+            ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+        } else { // portada: cubrir
+            let sw = img.width, sh = img.height, sx = 0, sy = 0;
+            if (ir > br) { sw = sh * br; sx = (img.width - sw) / 2; } else { sh = sw / br; sy = (img.height - sh) / 2; }
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        }
+    } else {
+        ctx.fillStyle = '#e8e1c5'; ctx.font = `700 ${Math.round(h * .28)}px "Chakra Petch"`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(initials(name).replace(/&amp;/g, '&'), x + w / 2, y + h / 2);
+    }
+    ctx.restore();
+}
+
+/* Texto con corte de línea; devuelve la y final. */
+function wrap(ctx, text, x, y, maxW, lh, maxLines) {
+    const words = text.split(' '); let line = '', lines = [];
+    words.forEach(w => {
+        const t = line ? line + ' ' + w : w;
+        if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+    });
+    if (line) lines.push(line);
+    if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S*$/, '…'); }
+    lines.forEach((l, i) => ctx.fillText(l, x, y + i * lh));
+    return y + lines.length * lh;
+}
+
+async function buildShareImage() {
+    const W = 1080, H = 1920;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    await Promise.all(['700 40px "Chakra Petch"', '600 40px "Hanken Grotesk"', '700 40px "JetBrains Mono"'].map(f => document.fonts.load(f).catch(() => {})));
+
+    // fondo
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#2b3550'); bg.addColorStop(.45, '#222a3e'); bg.addColorStop(1, '#141a28');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    const glow = ctx.createRadialGradient(W * .8, 120, 0, W * .8, 120, 900);
+    glow.addColorStop(0, 'rgba(251,185,32,0.16)'); glow.addColorStop(1, 'rgba(251,185,32,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.035)'; ctx.lineWidth = 2;
+    for (let gx = 0; gx < W; gx += 60) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (let gy = 0; gy < H; gy += 60) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+    // franjas del logo arriba y abajo
+    [['#e30102', 0], ['#fd5006', 14], ['#fbb920', 28]].forEach(([c, o]) => {
+        ctx.fillStyle = c; ctx.fillRect(0, o, W, 14); ctx.fillRect(0, H - 42 + o, W, 14);
+    });
+
+    const goty = GOTY && state.picks[GOTY.entry];
+    const picks = SHARE_CATS.map(n => cats.find(c => c.nombre === n)).filter(c => c && state.picks[c.entry]);
+    const [logo, gotyImg, ...thumbs] = await Promise.all([
+        loadImg('assets/logo-cierre.png'),
+        goty ? loadImg(coverSrc(goty)) : null,
+        ...picks.map(c => loadImg(coverSrc(state.picks[c.entry]))),
+    ]);
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    if (logo) { const lw = 520, lh = lw * logo.height / logo.width; ctx.drawImage(logo, (W - lw) / 2, 92, lw, lh); }
+    ctx.fillStyle = '#fbb920'; ctx.font = '700 30px "JetBrains Mono"';
+    ctx.fillText('THE GAME AWARDS · 2026', W / 2, 380);
+    ctx.fillStyle = '#fd5006'; ctx.font = '700 110px "Chakra Petch"';
+    ctx.shadowColor = 'rgba(253,80,6,0.45)'; ctx.shadowBlur = 50;
+    ctx.fillText('MI PRONÓSTICO', W / 2, 488);
+    ctx.shadowBlur = 0;
+
+    // GOTY
+    let y = 545;
+    if (goty) {
+        const cw = 360, ch = 480, cx = (W - cw) / 2;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+        ctx.fillStyle = '#1c2334'; ctx.beginPath(); ctx.roundRect(cx, y, cw, ch, 22); ctx.fill(); ctx.restore();
+        drawCover(ctx, gotyImg, goty, cx, y, cw, ch, 22);
+        ctx.strokeStyle = '#fbb920'; ctx.lineWidth = 5; ctx.beginPath(); ctx.roundRect(cx, y, cw, ch, 22); ctx.stroke();
+        // sello
+        ctx.fillStyle = '#fd5006'; ctx.beginPath(); ctx.roundRect(W / 2 - 190, y + ch - 30, 380, 60, 30); ctx.fill();
+        ctx.fillStyle = '#1a1208'; ctx.font = '700 28px "JetBrains Mono"'; ctx.fillText('GAME OF THE YEAR', W / 2, y + ch + 10);
+        y += ch + 96;
+        ctx.fillStyle = '#e8e1c5'; ctx.font = '700 64px "Chakra Petch"';
+        y = wrap(ctx, goty, W / 2, y, 900, 70, 2) - 10;
+    }
+
+    // otras categorías
+    if (picks.length) {
+        const rowH = 112, gap = 12, x0 = 110, rw = W - 220;
+        const fit = Math.max(0, Math.floor((H - 268 - y) / (rowH + gap)));
+        picks.splice(fit);
+        picks.forEach((c, i) => {
+            const ry = y + i * (rowH + gap), name = state.picks[c.entry];
+            ctx.fillStyle = 'rgba(26,33,49,0.85)'; ctx.beginPath(); ctx.roundRect(x0, ry, rw, rowH, 16); ctx.fill();
+            ctx.fillStyle = '#fd5006'; ctx.fillRect(x0, ry, 7, rowH);
+            drawCover(ctx, thumbs[i], name, x0 + 22, ry + 12, 66, 88, 8);
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#737788'; ctx.font = '700 22px "JetBrains Mono"';
+            ctx.fillText(c.nombre.toUpperCase(), x0 + 110, ry + 44);
+            ctx.fillStyle = '#e8e1c5'; ctx.font = '700 38px "Chakra Petch"';
+            const sn = splitName(name);
+            wrap(ctx, sn.game ? `${sn.name} (${sn.game})` : sn.name, x0 + 110, ry + 88, rw - 134, 40, 1);
+            ctx.textAlign = 'center';
+        });
+    }
+
+    // pie
+    ctx.fillStyle = '#aaa591'; ctx.font = '600 34px "Hanken Grotesk"';
+    ctx.fillText(`por ${state.alias}`, W / 2, H - 230);
+    ctx.fillStyle = '#fbb920'; ctx.font = '700 46px "Chakra Petch"';
+    ctx.fillText('¿ME GANÁS? ARMÁ EL TUYO', W / 2, H - 160);
+    ctx.fillStyle = '#e8e1c5'; ctx.font = '700 32px "JetBrains Mono"';
+    ctx.fillText('checkpointvg.github.io/vga', W / 2, H - 105);
+
+    return new Promise(res => cv.toBlob(b => res(b), 'image/jpeg', 0.92));
+}
+
+function downloadShare() {
+    if (!shareFile) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(shareFile); a.download = shareFile.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+async function setupShare() {
+    const text = shareText();
+    $('shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + SITE_URL);
+    $('shareX').href = 'https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(SITE_URL);
+    try {
+        const blob = await buildShareImage();
+        shareFile = new File([blob], `pronostico-vga2026-${slug(state.alias) || 'checkpoint'}.jpg`, { type: 'image/jpeg' });
+        $('shareImg').src = URL.createObjectURL(blob);
+        $('sharePreview').hidden = false;
+    } catch (e) { shareFile = null; $('sharePreview').hidden = true; }
+}
+
+const canShareFile = () => shareFile && navigator.canShare && navigator.canShare({ files: [shareFile] });
+
+$('shareBtn').onclick = async () => {
+    const data = { title: 'Pronósticos VGA 2026 · Checkpoint', text: shareText(), url: SITE_URL };
+    try {
+        if (canShareFile()) await navigator.share({ files: [shareFile], text: data.text + ' ' + SITE_URL });
+        else if (navigator.share) await navigator.share(data);
+        else { downloadShare(); await copyLink(true); }
+    } catch (e) { /* el usuario canceló */ }
+};
+/* Instagram no acepta links desde la web: se comparte la imagen (celular) o se descarga para subirla. */
+$('shareIg').onclick = async () => {
+    if (canShareFile()) { try { await navigator.share({ files: [shareFile] }); } catch (e) {} return; }
+    downloadShare();
+    toast('Imagen descargada · subila a tu historia');
+};
+$('sharePreview').onclick = () => { downloadShare(); toast('Imagen descargada'); };
+async function copyLink(withImage) {
+    try { await navigator.clipboard.writeText(shareText() + ' ' + SITE_URL); toast(withImage === true ? 'Imagen descargada y link copiado' : 'Link copiado'); }
+    catch (e) { prompt('Copiá el link:', SITE_URL); }
+}
+$('shareCopy').onclick = copyLink;
 $('againBtn').onclick = () => { state.sent = false; save(); renderReview(); };
 
 /* ---------- arranque ---------- */
