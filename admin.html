@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Admin · Pronósticos VGA 2026</title>
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+[hidden] { display: none !important; }
+.app { max-width: 1240px; padding-bottom: 60px; }
+.topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+.topbar img { height: 28px; }
+.topbar h1 { font: 700 clamp(26px, 4vw, 40px) var(--font-display); }
+.topbar .spacer { flex: 1; }
+.btn.sm { padding: 10px 16px; font-size: 14px; }
+a.btn { text-decoration: none; }
+
+/* login */
+.login { margin: 12vh auto 0; width: min(420px, 100%); display: flex; flex-direction: column; gap: 12px; }
+.login input {
+    width: 100%; padding: 14px 16px; border-radius: 12px; font: 600 18px var(--font-mono); color: var(--text);
+    background: rgba(26,33,50,0.9); border: 1px solid rgba(251,185,32,0.25); outline: none;
+}
+.login input:focus { border-color: var(--accent); }
+.login .err { min-height: 18px; color: var(--hot); font-size: 14px; }
+.login label, .stat small {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 3px; color: var(--dim); text-transform: uppercase;
+}
+
+/* estado */
+.stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+.stat {
+    flex: 1 1 160px; padding: 14px 18px; border-radius: 14px;
+    background: rgba(34,42,62,0.8); border: 1px solid var(--panel-line);
+}
+.stat b { display: block; margin-top: 4px; font: 700 28px var(--font-display); }
+.stat b em { font-style: normal; color: var(--accent); }
+.status { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; min-height: 18px; margin-bottom: 14px; }
+.status.err { color: var(--hot); }
+
+.layout { display: grid; gap: 22px; grid-template-columns: 1fr; }
+@media (min-width: 1040px) { .layout { grid-template-columns: 1fr 340px; align-items: start; } }
+
+/* categorías */
+.cat {
+    border-radius: 16px; margin-bottom: 14px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(46,56,80,0.85), rgba(34,42,62,0.85));
+    border: 1px solid var(--panel-line);
+}
+.cat.done { border-color: rgba(253,80,6,0.45); }
+.cat > header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; }
+.cat .idx { font-family: var(--font-mono); font-size: 12px; color: var(--dim); width: 22px; }
+.cat h3 { flex: 1; font: 600 20px var(--font-display); }
+.cat .state { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); text-align: right; }
+.cat.done .state { color: var(--accent-2); }
+.cat .chev { color: var(--dim); transition: transform .3s; }
+.cat.open .chev { transform: rotate(90deg); }
+.cat .noms { display: none; padding: 0 14px 14px; gap: 8px; grid-template-columns: 1fr; }
+.cat.open .noms { display: grid; }
+@media (min-width: 700px) { .cat .noms { grid-template-columns: 1fr 1fr; } }
+
+.nom {
+    position: relative; display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
+    padding: 8px 12px 8px 8px; border-radius: 12px; overflow: hidden;
+    background: rgba(22,28,43,0.7); border: 1px solid var(--panel-line);
+    transition: border-color .2s, transform .2s var(--ease-out-expo);
+}
+.nom:hover { border-color: rgba(251,185,32,0.35); transform: translateY(-1px); }
+.nom .pct { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(251,185,32,0.07); pointer-events: none; transition: width .6s var(--ease-out-expo); }
+.nom .thumb {
+    position: relative; flex: none; width: 42px; aspect-ratio: 3 / 4; border-radius: 6px; overflow: hidden;
+    background: #1c2334; display: grid; place-items: center; font: 700 13px var(--font-display); color: rgba(232,225,197,0.3);
+}
+.nom .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; max-height: none; }
+.nom .thumb img.wide { object-fit: contain; padding: 3px; }
+.nom .t { position: relative; flex: 1; min-width: 0; font: 600 16px/1.15 var(--font-display); }
+.nom .t small { display: block; font: italic 500 13px var(--font-body); color: var(--muted); }
+.nom .votes { position: relative; flex: none; font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: right; }
+.nom .votes b { color: var(--text); }
+.nom.win { border-color: var(--accent); background: linear-gradient(90deg, rgba(253,80,6,0.22), rgba(22,28,43,0.85)); box-shadow: 0 0 0 1px var(--accent); }
+.nom.win::after {
+    content: "GANADOR"; position: absolute; right: 10px; top: 6px;
+    font: 700 9px var(--font-mono); letter-spacing: 2px; color: var(--accent-2);
+}
+.nom.saving { opacity: .55; pointer-events: none; }
+.cat .tools { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+.linkbtn { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 6px 8px; }
+.linkbtn:hover { color: var(--hot); }
+
+/* ranking lateral */
+.side { position: sticky; top: 20px; padding: 18px; border-radius: 16px; background: rgba(26,33,49,0.92); border: 1px solid rgba(251,185,32,0.25); border-left: 5px solid var(--accent); }
+.side h2 { font: 700 22px var(--font-display); margin-bottom: 12px; }
+.side ol { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 60vh; overflow: auto; }
+.side li { display: flex; align-items: baseline; gap: 10px; font-size: 15px; }
+.side li .p { font-family: var(--font-mono); font-size: 12px; color: var(--dim); width: 26px; }
+.side li .a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side li .s { font: 700 15px var(--font-display); color: var(--accent); }
+.side .empty { color: var(--muted); font-size: 14px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="fx" aria-hidden="true"><div class="grid"></div><div class="scan"></div></div>
+<div class="hull-stripe" aria-hidden="true"></div>
+
+<main class="app">
+    <div class="topbar">
+        <img src="assets/logo-mini.png" alt="Checkpoint">
+        <h1>Admin · VGA 2026</h1>
+        <span class="spacer"></span>
+        <a class="btn ghost sm" href="ranking.html" target="_blank" rel="noopener">Abrir ranking ▸</a>
+        <button class="btn ghost sm" id="logoutBtn" type="button" hidden>Salir</button>
+    </div>
+
+    <!-- LOGIN -->
+    <form class="login" id="login" hidden>
+        <label for="key">Clave de admin</label>
+        <input id="key" type="password" autocomplete="current-password" required>
+        <div class="err" id="loginErr" role="alert"></div>
+        <button class="btn" type="submit">Entrar ▸</button>
+    </form>
+
+    <!-- PANEL -->
+    <section id="panel" hidden>
+        <div class="stats">
+            <div class="stat"><small>Votantes</small><b id="sVotantes">–</b></div>
+            <div class="stat"><small>Reveladas</small><b id="sReveladas">–</b></div>
+            <div class="stat"><small>Puntero</small><b id="sLider">–</b></div>
+        </div>
+        <div class="status" id="status" role="status"></div>
+        <div class="layout">
+            <div id="cats"></div>
+            <aside class="side">
+                <h2>Ranking completo</h2>
+                <ol id="full"></ol>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<script src="config.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const KEY_STORE = 'vga2026-admin-key';
+let key = '';
+try { key = localStorage.getItem(KEY_STORE) || ''; } catch (e) {}
+let data = null;
+const open = new Set();
+
+/* ---------- API ---------- */
+async function apiGet(params) {
+    const r = await fetch(API_URL + '?' + new URLSearchParams(params));
+    return r.json();
+}
+async function apiPost(body) {
+    // text/plain evita el preflight CORS que Apps Script no responde
+    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    return r.json();
+}
+
+function setStatus(msg, err) { $('status').textContent = msg || ''; $('status').className = 'status' + (err ? ' err' : ''); }
+
+/* ---------- login ---------- */
+async function tryLogin(k) {
+    const r = await apiGet({ action: 'check', key: k });
+    return r.ok === true;
+}
+$('login').addEventListener('submit', async e => {
+    e.preventDefault();
+    const k = $('key').value.trim();
+    $('loginErr').textContent = 'Verificando…';
+    try {
+        if (await tryLogin(k)) {
+            key = k; try { localStorage.setItem(KEY_STORE, k); } catch (e) {}
+            enter();
+        } else $('loginErr').textContent = 'Clave incorrecta.';
+    } catch (err) { $('loginErr').textContent = 'No se pudo conectar con la API.'; }
+});
+$('logoutBtn').onclick = () => { try { localStorage.removeItem(KEY_STORE); } catch (e) {} location.reload(); };
+
+function showLogin() { $('login').hidden = false; $('panel').hidden = true; $('logoutBtn').hidden = true; $('key').focus(); }
+function enter() { $('login').hidden = true; $('panel').hidden = false; $('logoutBtn').hidden = false; load(); }
+
+/* ---------- datos ---------- */
+async function load() {
+    setStatus('Actualizando…');
+    try {
+        const r = await apiGet({ action: 'ranking', key, limit: 0 });
+        if (!r.ok) throw new Error(r.error || 'error');
+        if (!r.admin) { try { localStorage.removeItem(KEY_STORE); } catch (e) {} showLogin(); return; }
+        data = r; render();
+        setStatus('Actualizado ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } catch (err) { setStatus('Error al leer la API: ' + err.message, true); }
+}
+
+async function setWinner(cat, nom) {
+    const btns = document.querySelectorAll(`[data-cat="${CSS.escape(cat)}"] .nom`);
+    btns.forEach(b => b.classList.add('saving'));
+    setStatus(nom ? `Guardando: ${cat} → ${nom}` : `Quitando ganador de ${cat}…`);
+    try {
+        const r = await apiPost({ action: 'setWinner', key, categoria: cat, ganador: nom });
+        if (!r.ok) throw new Error(r.error || 'error');
+        data = r; render();
+        setStatus(nom ? `✓ ${cat}: ${nom}` : `✓ ${cat} sin ganador`);
+    } catch (err) {
+        btns.forEach(b => b.classList.remove('saving'));
+        setStatus('No se pudo guardar: ' + err.message, true);
+    }
+}
+
+/* ---------- render ---------- */
+function splitName(s) { const i = s.indexOf(' — '); return i < 0 ? { name: s, game: '' } : { name: s.slice(0, i), game: s.slice(i + 3) }; }
+const initials = s => esc(s.replace(/^(The|A)\s+/i, '').split(/[\s:]+/).filter(w => /^[A-Za-z0-9]/.test(w)).slice(0, 2).map(w => w[0]).join('').toUpperCase());
+
+function render() {
+    const g = data.ganadores || {}, conteo = data.conteo || {};
+    $('sVotantes').textContent = data.votantes;
+    $('sReveladas').innerHTML = `<em>${data.reveladas}</em> / ${data.total}`;
+    const lider = data.ranking[0];
+    $('sLider').textContent = lider && data.reveladas ? `${lider.alias} (${lider.puntos})` : '–';
+
+    // abrir por defecto la primera categoría sin ganador
+    if (!open.size) { const next = CATS.find(c => !g[c.nombre]); if (next) open.add(next.nombre); }
+
+    $('cats').innerHTML = CATS.map((c, i) => {
+        const win = g[c.nombre];
+        const cnt = conteo[c.nombre] || {};
+        const tot = Object.values(cnt).reduce((a, b) => a + b, 0);
+        const noms = c.nominados.map(n => {
+            const { name, game } = splitName(n);
+            const title = game || name, v = cnt[n] || 0, pct = tot ? Math.round(v / tot * 100) : 0;
+            return `<button type="button" class="nom${n === win ? ' win' : ''}" data-nom="${esc(n)}">
+                <span class="pct" style="width:${pct}%"></span>
+                <span class="thumb">${initials(title)}<img src="assets/covers/${slug(title)}.jpg" alt="" loading="lazy" onload="if(this.naturalWidth>this.naturalHeight)this.classList.add('wide')" onerror="this.remove()"></span>
+                <span class="t">${esc(name)}${game ? `<small>${esc(game)}</small>` : ''}</span>
+                <span class="votes"><b>${v}</b> · ${pct}%</span>
+            </button>`;
+        }).join('');
+        return `<div class="cat${win ? ' done' : ''}${open.has(c.nombre) ? ' open' : ''}" data-cat="${esc(c.nombre)}">
+            <header><span class="idx">${pad(i + 1)}</span><h3>${esc(c.nombre)}</h3>
+                <span class="state">${win ? esc(win) : 'Pendiente'}</span><span class="chev">▸</span></header>
+            <div class="noms">${noms}${win ? '<div class="tools"><button type="button" class="linkbtn" data-clear>Quitar ganador</button></div>' : ''}</div>
+        </div>`;
+    }).join('');
+
+    $('full').innerHTML = data.ranking.length
+        ? data.ranking.map(r => `<li><span class="p">${r.pos}º</span><span class="a">${esc(r.alias)}${r.goty ? ' ★' : ''}</span><span class="s">${r.puntos}</span></li>`).join('')
+        : '<li class="empty">Todavía no hay votos.</li>';
+}
+
+$('cats').addEventListener('click', e => {
+    const cat = e.target.closest('.cat'); if (!cat) return;
+    const name = cat.dataset.cat;
+    if (e.target.closest('header')) {
+        open.has(name) ? open.delete(name) : open.add(name);
+        cat.classList.toggle('open');
+        return;
+    }
+    if (e.target.closest('[data-clear]')) return setWinner(name, null);
+    const nom = e.target.closest('.nom');
+    if (nom && !nom.classList.contains('win')) setWinner(name, nom.dataset.nom);
+});
+
+/* refresco suave para ver votos nuevos */
+setInterval(() => { if (!$('panel').hidden && !document.hidden) load(); }, 30000);
+
+/* ---------- arranque ---------- */
+(async () => {
+    if (key) {
+        try { if (await tryLogin(key)) return enter(); } catch (e) {}
+    }
+    showLogin();
+})();
+</script>
+</body>
+</html>
