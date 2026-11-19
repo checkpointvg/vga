@@ -21,14 +21,11 @@
         .toasty.out { transition: transform .35s ease-in; transform: translate(105%, 30%) rotate(8deg); }
         .toasty img { display: block; width: min(240px, 46vw); height: auto; border-radius: 14px 0 0 0;
             border: 3px solid #fd5006; border-right: 0; border-bottom: 0; box-shadow: -20px 20px 60px rgba(0,0,0,.6); }
-        .toasty b { position: absolute; left: -18px; top: 18%; padding: 6px 12px; border-radius: 8px;
-            font: 700 clamp(18px, 4vw, 26px) 'Chakra Petch', sans-serif; letter-spacing: 1px; color: #1a1208;
-            background: #fbb920; transform: rotate(-10deg) translateX(-60%); box-shadow: 0 8px 20px rgba(0,0,0,.45); white-space: nowrap; }
         @media (prefers-reduced-motion: reduce) { .toasty, .toasty.out { transition: opacity .2s; } }`;
         document.head.appendChild(css);
         el = document.createElement('div');
         el.className = 'toasty'; el.setAttribute('aria-hidden', 'true');
-        el.innerHTML = '<b>¡TOASTY!</b><img src="assets/toasty.jpg" alt="">';
+        el.innerHTML = '<img src="assets/toasty.jpg" alt="">';
         document.body.appendChild(el);
         audio = new Audio('assets/toasty.mp3'); audio.preload = 'auto';
     }
