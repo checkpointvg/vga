@@ -8,13 +8,13 @@
  *   GET  ?action=ranking[&limit=10]          → público: top N, ganadores cargados, totales
  *   GET  ?action=ranking&key=CLAVE&limit=0   → admin: ranking completo
  *   GET  ?action=check&key=CLAVE             → valida la clave
- *   GET  ?action=integrantes&key=CLAVE       → admin: votos de quienes tienen tildada la columna "Integrante"
+ *   GET  ?action=integrantes&key=CLAVE       → admin: votos de los nombres listados en la hoja "Integrantes"
  *   POST {action:'setWinner', key, categoria, ganador|null}  (body text/plain con JSON)
  */
 
 const SHEET_ID_DEFAULT = '1P2KEvkcPYVA3e8-Y8uI2OBgiK0BOwdv1pnr7qz1XhOQ';
 const HOJA_GANADORES = 'Ganadores';
-const COL_INTEGRANTE = 'Integrante';
+const HOJA_INTEGRANTES = 'Integrantes';
 
 /* Mismo orden que la web: de menor a mayor importancia. Se usa para desempatar. */
 const ORDEN_API = [
@@ -128,35 +128,55 @@ function calcular_(limit, admin) {
   return out;
 }
 
-/* Votos de los integrantes: los alias con la columna "Integrante" marcada (checkbox, "x", "sí"…) en la hoja de respuestas. */
+/* Votos de los integrantes: los alias que coinciden con los nombres de la columna A de la hoja "Integrantes"
+   (sin distinguir mayúsculas, acentos ni espacios de más). La primera fila puede ser un encabezado. */
 function integrantes_() {
   const ganadores = leerGanadores_();
   const ganadoresOut = {};
   Object.keys(ganadores).forEach(c => { ganadoresOut[c] = ganadores[c].ganador; });
-  const lista = leerVotos_().filter(v => v.integrante).map(v => {
+  const nombres = leerIntegrantes_();
+  const existe = nombres !== null;
+  const votos = {};
+  leerVotos_().forEach(v => { votos[norm_(v.alias)] = v; });
+  const lista = [], sinVoto = [];
+  (nombres || []).forEach(n => {
+    const v = votos[norm_(n)];
+    if (!v) { sinVoto.push(n); return; }
     let puntos = 0;
     Object.keys(ganadoresOut).forEach(c => { if (v.picks[c] === ganadoresOut[c]) puntos++; });
-    return { alias: v.alias, picks: v.picks, puntos: puntos };
+    lista.push({ alias: n, picks: v.picks, puntos: puntos });
   });
-  lista.sort((a, b) => a.alias.localeCompare(b.alias));
-  return { ok: true, columna: COL_INTEGRANTE, integrantes: lista, ganadores: ganadoresOut };
+  return { ok: true, hoja: HOJA_INTEGRANTES, existeHoja: existe, integrantes: lista, sinVoto: sinVoto, ganadores: ganadoresOut };
 }
 
-/* Lee las respuestas del Form; si un alias votó más de una vez, queda el último envío.
-   La columna "Integrante" se agrega a mano a la derecha de la hoja; basta marcar cualquier fila del alias. */
+function leerIntegrantes_() {
+  const h = SpreadsheetApp.openById(sheetId_()).getSheetByName(HOJA_INTEGRANTES);
+  if (!h) return null;
+  if (h.getLastRow() < 1) return [];
+  const vistos = {}, out = [];
+  h.getRange(1, 1, h.getLastRow(), 1).getValues().forEach((r, i) => {
+    const n = String(r[0] || '').trim().replace(/\s+/g, ' ');
+    if (!n) return;
+    if (i === 0 && ['nombre', 'nombres', 'integrante', 'integrantes', 'alias'].indexOf(norm_(n)) >= 0) return;
+    if (vistos[norm_(n)]) return;
+    vistos[norm_(n)] = true;
+    out.push(n);
+  });
+  return out;
+}
+
+function norm_(s) {
+  return String(s).normalize('NFD').replace(/\p{M}/gu, '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+/* Lee las respuestas del Form; si un alias votó más de una vez, queda el último envío. */
 function leerVotos_() {
   const ss = SpreadsheetApp.openById(sheetId_());
-  const hoja = ss.getSheets().find(h => h.getLastRow() > 0 && h.getRange(1, 1, 1, h.getLastColumn()).getValues()[0].indexOf('Alias') >= 0);
+  const hoja = ss.getSheets().find(h => [HOJA_GANADORES, HOJA_INTEGRANTES].indexOf(h.getName()) < 0 && h.getLastRow() > 0 && h.getRange(1, 1, 1, h.getLastColumn()).getValues()[0].indexOf('Alias') >= 0);
   if (!hoja || hoja.getLastRow() < 2) return [];
   const datos = hoja.getDataRange().getValues();
   const head = datos[0].map(String);
   const iAlias = head.indexOf('Alias');
-  const iInt = head.findIndex(h => h.trim().toLowerCase() === COL_INTEGRANTE.toLowerCase());
-  const marcados = {};
-  if (iInt >= 0) datos.slice(1).forEach(row => {
-    const alias = String(row[iAlias] || '').trim().replace(/\s+/g, ' ').toLowerCase();
-    if (alias && esVerdadero_(row[iInt])) marcados[alias] = true;
-  });
   const porAlias = {};
   datos.slice(1).forEach(row => {
     const alias = String(row[iAlias] || '').trim().replace(/\s+/g, ' ');
@@ -166,14 +186,9 @@ function leerVotos_() {
     if (porAlias[k] && porAlias[k].ts > ts) return;
     const picks = {};
     head.forEach((h, i) => { if (ORDEN_API.indexOf(h) >= 0 && row[i] !== '') picks[h] = String(row[i]); });
-    porAlias[k] = { alias: alias, ts: ts, picks: picks, integrante: !!marcados[k] };
+    porAlias[k] = { alias: alias, ts: ts, picks: picks };
   });
   return Object.keys(porAlias).map(k => porAlias[k]);
-}
-
-function esVerdadero_(v) {
-  if (v === true || v === 1) return true;
-  return ['true', 'verdadero', 'x', 'si', 'sí', '1', 'yes'].indexOf(String(v).trim().toLowerCase()) >= 0;
 }
 
 function leerGanadores_() {

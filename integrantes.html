@@ -128,15 +128,21 @@ const initials = s => esc(s.replace(/^(The|A)\s+/i, '').split(/[\s:]+/).filter(w
 
 function render() {
     const ints = data.integrantes || [], g = data.ganadores || {};
+    const faltan = data.sinVoto || [], hoja = esc(data.hoja || 'Integrantes');
     if (!ints.length) {
         $('people').innerHTML = '';
-        $('cats').innerHTML = `<div class="msg">Todavía no hay integrantes marcados.<br>Agregá una columna <b>${esc(data.columna || 'Integrante')}</b> a la derecha de la hoja de respuestas y tildá (o poné “x”) en las filas de cada integrante.</div>`;
+        $('cats').innerHTML = `<div class="msg">${
+            data.existeHoja === false ? `No existe la hoja <b>${hoja}</b>. Creala en la planilla con un nombre por fila en la columna A (igual al alias con el que votan).`
+            : faltan.length ? `Ningún integrante votó todavía.<br>En la hoja <b>${hoja}</b>: ${faltan.map(esc).join(', ')}.`
+            : `La hoja <b>${hoja}</b> está vacía. Poné un nombre por fila en la columna A (igual al alias con el que votan).`
+        }</div>`;
         return;
     }
     const hayGanadores = Object.keys(g).length > 0;
     $('people').innerHTML = ints.map(p =>
         `<button type="button" class="person${p.alias === foco ? ' on' : ''}" data-alias="${esc(p.alias)}">${esc(p.alias)}${hayGanadores ? `<small>${p.puntos}</small>` : ''}</button>`
-    ).join('') + `<span class="hint">${foco ? 'Tocá de nuevo para ver a todos' : 'Tocá uno para resaltarlo'}</span>`;
+    ).join('') + `<span class="hint">${foco ? 'Tocá de nuevo para ver a todos' : 'Tocá uno para resaltarlo'}</span>`
+      + (faltan.length ? `<span class="hint">· Sin votar: ${faltan.map(esc).join(', ')}</span>` : '');
 
     $('cats').innerHTML = CATS.map((c, i) => {
         const win = g[c.nombre];
