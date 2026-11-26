@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Integrantes · Pronósticos VGA 2026</title>
+<link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=6d735504">
+<style>
+[hidden] { display: none !important; }
+.app { max-width: 1240px; padding-bottom: 60px; }
+.topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+.topbar img { height: 28px; }
+.topbar h1 { font: 700 clamp(26px, 4vw, 40px) var(--font-display); }
+.topbar .spacer { flex: 1; }
+.btn.sm { padding: 10px 16px; font-size: 14px; }
+a.btn { text-decoration: none; }
+
+.msg { margin: 10vh auto 0; width: min(520px, 100%); text-align: center; color: var(--muted); line-height: 1.5; }
+.msg b { color: var(--text); }
+.status { font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; min-height: 18px; margin-bottom: 14px; }
+.status.err { color: var(--hot); }
+
+/* integrantes (filtro + aciertos) */
+.people { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.person {
+    display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px; border-radius: 999px;
+    background: rgba(34,42,62,0.8); border: 1px solid var(--panel-line); font: 600 15px var(--font-display); color: var(--text);
+    transition: border-color .2s, background .2s;
+}
+.person:hover { border-color: rgba(251,185,32,0.4); }
+.person small { font: 700 12px var(--font-mono); color: var(--accent); }
+.person.on { border-color: var(--accent); background: rgba(251,185,32,0.14); }
+.people .hint { align-self: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; margin-left: 4px; }
+
+.grid2 { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+
+.cat {
+    border-radius: 16px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(46,56,80,0.85), rgba(34,42,62,0.85));
+    border: 1px solid var(--panel-line);
+}
+.cat.done { border-color: rgba(253,80,6,0.45); }
+.cat > header { display: flex; align-items: baseline; gap: 12px; padding: 14px 18px 10px; }
+.cat .idx { font-family: var(--font-mono); font-size: 12px; color: var(--dim); width: 22px; }
+.cat h3 { flex: 1; font: 600 20px var(--font-display); }
+.cat .state { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); text-align: right; }
+.cat.done .state { color: var(--accent-2); }
+.cat .rows { display: flex; flex-direction: column; gap: 6px; padding: 0 12px 12px; }
+
+.row {
+    display: flex; align-items: center; gap: 12px; padding: 6px 10px 6px 6px; border-radius: 12px;
+    background: rgba(22,28,43,0.7); border: 1px solid var(--panel-line);
+}
+.row.zero { opacity: .45; }
+.row.win { border-color: var(--accent); background: linear-gradient(90deg, rgba(253,80,6,0.22), rgba(22,28,43,0.85)); }
+.row .thumb {
+    position: relative; flex: none; width: 34px; aspect-ratio: 3 / 4; border-radius: 5px; overflow: hidden;
+    background: #1c2334; display: grid; place-items: center; font: 700 11px var(--font-display); color: rgba(232,225,197,0.3);
+}
+.row .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; max-height: none; }
+.row .thumb img.wide { object-fit: contain; padding: 2px; }
+.row .t { flex: 0 1 42%; min-width: 0; font: 600 15px/1.15 var(--font-display); }
+.row .t small { display: block; font: italic 500 12px var(--font-body); color: var(--muted); }
+.row .who { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.chip {
+    padding: 3px 9px; border-radius: 999px; font: 600 13px var(--font-body);
+    background: rgba(232,225,197,0.08); border: 1px solid rgba(232,225,197,0.14); color: var(--text);
+}
+.row.win .chip { background: rgba(253,80,6,0.25); border-color: rgba(253,80,6,0.6); }
+.chip.hl { background: var(--accent); border-color: var(--accent); color: #141a28; }
+.cat .none { padding: 0 18px 12px; font-size: 13px; color: var(--dim); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="fx" aria-hidden="true"><div class="grid"></div><div class="scan"></div></div>
+<div class="hull-stripe" aria-hidden="true"></div>
+
+<main class="app">
+    <div class="topbar">
+        <img src="assets/logo-mini.png" alt="Checkpoint">
+        <h1>Integrantes · VGA 2026</h1>
+        <span class="spacer"></span>
+        <a class="btn ghost sm" href="admin.html">◂ Admin</a>
+    </div>
+
+    <div class="msg" id="noKey" hidden>Primero entrá al <a href="admin.html">admin</a> con la clave; esta pantalla usa la misma sesión.</div>
+
+    <section id="panel" hidden>
+        <div class="status" id="status" role="status"></div>
+        <div class="people" id="people"></div>
+        <div class="grid2" id="cats"></div>
+    </section>
+</main>
+
+<script src="config.js?v=ca9227f1"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+let key = '';
+try { key = localStorage.getItem('vga2026-admin-key') || ''; } catch (e) {}
+let data = null;
+let foco = null; // alias resaltado
+
+function setStatus(msg, err) { $('status').textContent = msg || ''; $('status').className = 'status' + (err ? ' err' : ''); }
+
+async function load() {
+    setStatus('Actualizando…');
+    try {
+        const r = await (await fetch(API_URL + '?' + new URLSearchParams({ action: 'integrantes', key }))).json();
+        if (!r.ok) {
+            if (r.error === 'clave inválida') { $('panel').hidden = true; $('noKey').hidden = false; return; }
+            throw new Error(r.error || 'error');
+        }
+        data = r; render();
+        setStatus('Actualizado ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } catch (err) { setStatus('Error al leer la API: ' + err.message, true); }
+}
+
+function splitName(s) { const i = s.indexOf(' — '); return i < 0 ? { name: s, game: '' } : { name: s.slice(0, i), game: s.slice(i + 3) }; }
+const initials = s => esc(s.replace(/^(The|A)\s+/i, '').split(/[\s:]+/).filter(w => /^[A-Za-z0-9]/.test(w)).slice(0, 2).map(w => w[0]).join('').toUpperCase());
+
+function render() {
+    const ints = data.integrantes || [], g = data.ganadores || {};
+    if (!ints.length) {
+        $('people').innerHTML = '';
+        $('cats').innerHTML = `<div class="msg">Todavía no hay integrantes marcados.<br>Agregá una columna <b>${esc(data.columna || 'Integrante')}</b> a la derecha de la hoja de respuestas y tildá (o poné “x”) en las filas de cada integrante.</div>`;
+        return;
+    }
+    const hayGanadores = Object.keys(g).length > 0;
+    $('people').innerHTML = ints.map(p =>
+        `<button type="button" class="person${p.alias === foco ? ' on' : ''}" data-alias="${esc(p.alias)}">${esc(p.alias)}${hayGanadores ? `<small>${p.puntos}</small>` : ''}</button>`
+    ).join('') + `<span class="hint">${foco ? 'Tocá de nuevo para ver a todos' : 'Tocá uno para resaltarlo'}</span>`;
+
+    $('cats').innerHTML = CATS.map((c, i) => {
+        const win = g[c.nombre];
+        const sinVoto = ints.filter(p => !p.picks[c.nombre]).map(p => p.alias);
+        const acertaron = win ? ints.filter(p => p.picks[c.nombre] === win).length : 0;
+        const rows = c.nominados.map(n => {
+            const { name, game } = splitName(n);
+            const title = game || name;
+            const who = ints.filter(p => p.picks[c.nombre] === n);
+            return { n, name, game, title, who };
+        }).sort((a, b) => (b.n === win) - (a.n === win) || b.who.length - a.who.length).map(r => `
+            <div class="row${r.n === win ? ' win' : ''}${r.who.length ? '' : ' zero'}">
+                <span class="thumb">${initials(r.title)}<img src="assets/covers/${slug(r.title)}.jpg" alt="" loading="lazy" onload="if(this.naturalWidth>this.naturalHeight)this.classList.add('wide')" onerror="this.remove()"></span>
+                <span class="t">${esc(r.name)}${r.game ? `<small>${esc(r.game)}</small>` : ''}</span>
+                <span class="who">${r.who.map(p => `<span class="chip${p.alias === foco ? ' hl' : ''}">${esc(p.alias)}</span>`).join('')}</span>
+            </div>`).join('');
+        return `<div class="cat${win ? ' done' : ''}">
+            <header><span class="idx">${pad(i + 1)}</span><h3>${esc(c.nombre)}</h3>
+                <span class="state">${win ? `${acertaron}/${ints.length} acertaron` : 'Pendiente'}</span></header>
+            <div class="rows">${rows}</div>
+            ${sinVoto.length ? `<div class="none">Sin voto: ${sinVoto.map(esc).join(', ')}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+
+$('people').addEventListener('click', e => {
+    const b = e.target.closest('.person'); if (!b) return;
+    foco = foco === b.dataset.alias ? null : b.dataset.alias;
+    render();
+});
+
+setInterval(() => { if (!$('panel').hidden && !document.hidden) load(); }, 30000);
+
+if (key) { $('panel').hidden = false; load(); } else $('noKey').hidden = false;
+</script>
+<script src="toasty.js?v=925360a1" defer></script>
+</body>
+</html>

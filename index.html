@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=6d735504">
 </head>
 <body class="on-intro">
 
@@ -155,7 +155,7 @@
     </nav>
 </div>
 
-<script src="config.js"></script>
+<script src="config.js?v=ca9227f1"></script>
 <script>
 
 /* Fecha de cierre opcional (hora local del votante). null = sin cierre. Ej: '2026-12-10T21:00:00-03:00' */
@@ -650,6 +650,6 @@ if (CIERRE && Date.now() > new Date(CIERRE).getTime() && !state.sent) {
 } else if (state.sent) renderDone();
 else show('intro');
 </script>
-<script src="toasty.js" defer></script>
+<script src="toasty.js?v=925360a1" defer></script>
 </body>
 </html>
